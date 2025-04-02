@@ -1,11 +1,11 @@
 CREATE TABLE locations
 (
     id        SERIAL PRIMARY KEY,
-    name      VARCHAR(255) NOT NULL ,
-    user_id   INT NOT NULL,
-    latitude  DECIMAL NOT NULL ,
-    longitude DECIMAL NOT NULL ,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    name      VARCHAR(255) NOT NULL,
+    user_id   INT          NOT NULL,
+    latitude  DECIMAL      NOT NULL,
+    longitude DECIMAL      NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE locations IS 'Локации пользователя';
