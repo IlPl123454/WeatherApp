@@ -1,17 +1,18 @@
 package ru.plenkkovii.weather.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.plenkkovii.weather.model.User;
 import ru.plenkkovii.weather.repository.UserRepository;
 import ru.plenkkovii.weather.utils.BCryptUtil;
 
+@AllArgsConstructor
+
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public User login(String username, String password) {
         User user = findByLogin(username);
@@ -26,7 +27,7 @@ public class UserService {
 
         User user = new User();
         user.setLogin(login);
-        user.setPassword(BCryptUtil.hash(password1));
+        user.setPassword(BCryptUtil.hash(password1)); // вот тут наверняка можно лучше создать и вернуть объект
 
         return userRepository.save(user);
     }
@@ -46,12 +47,12 @@ public class UserService {
 
     private User findByLogin(String login) {
         return userRepository.findUserByLogin(login)
-                .orElseThrow(() -> new IllegalArgumentException("User with this login not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Password or login is wrong"));
     }
 
     private void validateLogInPasswordEquals(String password1, String password2) {
         if (!BCryptUtil.checkPassword(password1, password2)) {
-            throw new IllegalArgumentException("Passwords don't match");
+            throw new IllegalArgumentException("Password or login is wrong");
         }
     }
 }
