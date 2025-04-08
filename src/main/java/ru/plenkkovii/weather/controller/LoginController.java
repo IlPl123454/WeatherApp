@@ -3,6 +3,7 @@ package ru.plenkkovii.weather.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 
+@Slf4j
 @Controller
 public class LoginController {
 
@@ -41,14 +43,10 @@ public class LoginController {
 
         Cookie sessionUuid = new Cookie("SESSION_UUID", uuid.toString());
         Cookie userName = new Cookie("USER_NAME", login);
-
         sessionUuid.setPath("/");
         resp.addCookie(sessionUuid);
         resp.addCookie(userName);
 
-        String message = "Успешный вход с именем:  " + user.getLogin();
-        model.addAttribute("message", message);
-
-        return "message";
+        return "redirect:/index";
     }
 }
