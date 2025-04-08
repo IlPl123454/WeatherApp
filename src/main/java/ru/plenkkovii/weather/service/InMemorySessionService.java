@@ -16,13 +16,13 @@ public class InMemorySessionService implements SessionService {
 
     private final Map<UUID, Session> sessions = new ConcurrentHashMap<>();
 
-    private static final Duration SESSION_LIFETIME = Duration.ofMinutes(2);
+    private static final Duration SESSION_LIFETIME = Duration.ofSeconds(10);
 
     @Override
     public UUID saveSession(User user) {
         UUID uuid = UUID.randomUUID();
         sessions.put(uuid, new Session(uuid, user, LocalDateTime.now().plus(SESSION_LIFETIME)));
-        // тут я знаю что два раза храню uuid, как ключ и как поле в Session, не хочу добавлять новый класс,
+        // тут я два раза храню uuid, как ключ и как поле в Session, не хочу добавлять новый класс,
         // буду пользощваться который будет в БД
 
         return uuid;
@@ -43,7 +43,13 @@ public class InMemorySessionService implements SessionService {
     }
 
     private boolean isExpired(Session session) {
-        return session.getExpiresAt().isBefore(LocalDateTime.now());
+        //TODO убрать вариант для отладки, оставить одной строчкой
+//        return session.getExpiresAt().isBefore(LocalDateTime.now());
+        boolean expired = session.getExpiresAt().isBefore(LocalDateTime.now());
+        if (expired) {
+            System.out.println("session is expired");
+        }
+        return expired;
     }
 
 }
