@@ -38,7 +38,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         System.out.println("session not found");
-        response.sendRedirect("/home");
+        response.sendRedirect("/index");
         return false;
     }
 }

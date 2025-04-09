@@ -16,7 +16,7 @@ public class InMemorySessionService implements SessionService {
 
     private final Map<UUID, Session> sessions = new ConcurrentHashMap<>();
 
-    private static final Duration SESSION_LIFETIME = Duration.ofSeconds(10);
+    private static final Duration SESSION_LIFETIME = Duration.ofSeconds(60);
 
     @Override
     public UUID saveSession(User user) {
@@ -32,8 +32,9 @@ public class InMemorySessionService implements SessionService {
     public Optional<Session> getSession(UUID uuid) {
         Session session = sessions.get(uuid);
         if (session != null && !isExpired(session)) {
-            return Optional.of(sessions.get(uuid));
+            return Optional.of(session);
         }
+        sessions.remove(uuid);
         return Optional.empty();
     }
 
@@ -43,13 +44,6 @@ public class InMemorySessionService implements SessionService {
     }
 
     private boolean isExpired(Session session) {
-        //TODO убрать вариант для отладки, оставить одной строчкой
-//        return session.getExpiresAt().isBefore(LocalDateTime.now());
-        boolean expired = session.getExpiresAt().isBefore(LocalDateTime.now());
-        if (expired) {
-            System.out.println("session is expired");
-        }
-        return expired;
+        return session.getExpiresAt().isBefore(LocalDateTime.now());
     }
-
 }

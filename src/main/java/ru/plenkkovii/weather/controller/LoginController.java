@@ -47,6 +47,6 @@ public class LoginController {
         resp.addCookie(sessionUuid);
         resp.addCookie(userName);
 
-        return "redirect:/index";
+        return "redirect:/home";
     }
 }
