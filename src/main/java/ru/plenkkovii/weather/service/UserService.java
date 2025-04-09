@@ -13,7 +13,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-
     public User login(String username, String password) {
         User user = findByLogin(username);
         validateLogInPasswordEquals(password, user.getPassword());
@@ -35,24 +34,24 @@ public class UserService {
     //TODO не кидать общие исключения (сделать детальней)
     private void validateLoginNotTaken(String login) {
         if (userRepository.findUserByLogin(login).isPresent()) {
-            throw new IllegalArgumentException("Login is already taken");
+            throw new IllegalArgumentException("Пользователь с таким логином уже зарегестрирован");
         }
     }
 
     private void validateRegisterPasswordEquals(String password1, String password2) {
         if (!password1.equals(password2)) {
-            throw new IllegalArgumentException("Passwords don't match");
+            throw new IllegalArgumentException("Пароли не совпадают");
         }
     }
 
     private User findByLogin(String login) {
         return userRepository.findUserByLogin(login)
-                .orElseThrow(() -> new IllegalArgumentException("Password or login is wrong"));
+                .orElseThrow(() -> new IllegalArgumentException("Вы ввели неверный логин или пароль"));
     }
 
     private void validateLogInPasswordEquals(String password1, String password2) {
         if (!BCryptUtil.checkPassword(password1, password2)) {
-            throw new IllegalArgumentException("Password or login is wrong");
+            throw new IllegalArgumentException("Вы ввели неверный логин или пароль");
         }
     }
 }
