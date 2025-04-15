@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import ru.plenkkovii.weather.model.Session;
 import ru.plenkkovii.weather.service.SessionService;
@@ -12,13 +13,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
+@Component
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private final SessionService sessionService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println("interceptor preHandle");
         Cookie[] cookies = request.getCookies();
 
         String sessionId = null;
@@ -37,7 +38,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 }
         }
 
-        System.out.println("session not found");
         response.sendRedirect("/index");
         return false;
     }

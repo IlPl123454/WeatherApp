@@ -1,9 +1,11 @@
 package ru.plenkkovii.weather.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.plenkkovii.weather.model.Session;
 import ru.plenkkovii.weather.model.User;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -18,10 +20,11 @@ public class InMemorySessionService implements SessionService {
 
     private static final Duration SESSION_LIFETIME = Duration.ofSeconds(60);
 
+    @Transactional
     @Override
     public UUID saveSession(User user) {
         UUID uuid = UUID.randomUUID();
-        sessions.put(uuid, new Session(uuid, user, LocalDateTime.now().plus(SESSION_LIFETIME)));
+        sessions.put(uuid, new Session(uuid, user, LocalDateTime.now(Clock.systemUTC()).plus(SESSION_LIFETIME)));
         // тут я два раза храню uuid, как ключ и как поле в Session, не хочу добавлять новый класс,
         // буду пользощваться который будет в БД
 
@@ -44,6 +47,6 @@ public class InMemorySessionService implements SessionService {
     }
 
     private boolean isExpired(Session session) {
-        return session.getExpiresAt().isBefore(LocalDateTime.now());
+        return session.getExpiresAt().isBefore(LocalDateTime.now(Clock.systemUTC()));
     }
 }

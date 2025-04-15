@@ -1,10 +1,10 @@
 package ru.plenkkovii.weather.service;
 
 import lombok.AllArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import ru.plenkkovii.weather.model.User;
 import ru.plenkkovii.weather.repository.UserRepository;
-import ru.plenkkovii.weather.utils.BCryptUtil;
 
 @AllArgsConstructor
 
@@ -20,15 +20,15 @@ public class UserService {
         return user;
     }
 
-    public User save(String login, String password1, String password2) {
+    public User save(String login, String password1) {
         validateLoginNotTaken(login);
-        validateRegisterPasswordEquals(password1, password2);
-
-        User user = new User();
-        user.setLogin(login);
-        user.setPassword(BCryptUtil.hash(password1)); // вот тут наверняка можно лучше создать и вернуть объект
+        User user = User.builder()  // тут наверное надо использовать dto объект
+                .login(login)
+                .password(BCrypt.hashpw(password1, BCrypt.gensalt()))
+                .build();
 
         return userRepository.save(user);
+
     }
 
     //TODO не кидать общие исключения (сделать детальней)
@@ -38,19 +38,13 @@ public class UserService {
         }
     }
 
-    private void validateRegisterPasswordEquals(String password1, String password2) {
-        if (!password1.equals(password2)) {
-            throw new IllegalArgumentException("Пароли не совпадают");
-        }
-    }
-
     private User findByLogin(String login) {
         return userRepository.findUserByLogin(login)
                 .orElseThrow(() -> new IllegalArgumentException("Вы ввели неверный логин или пароль"));
     }
 
     private void validateLogInPasswordEquals(String password1, String password2) {
-        if (!BCryptUtil.checkPassword(password1, password2)) {
+        if (!BCrypt.checkpw(password1, password2)) {
             throw new IllegalArgumentException("Вы ввели неверный логин или пароль");
         }
     }
