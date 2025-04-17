@@ -1,10 +1,13 @@
 package ru.plenkkovii.weather.service;
 
+import jakarta.servlet.http.Cookie;
 import lombok.AllArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import ru.plenkkovii.weather.model.User;
 import ru.plenkkovii.weather.repository.UserRepository;
+
+import java.util.UUID;
 
 @AllArgsConstructor
 
@@ -13,30 +16,39 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User login(String username, String password) {
+    private final SessionService sessionService;
+
+    public Cookie login(String username, String password) {
         User user = findByLogin(username);
+
         validateLogInPasswordEquals(password, user.getPassword());
 
-        return user;
+        UUID uuid = sessionService.saveSession(user);
+
+        Cookie sessionUuid = new Cookie("SESSION_UUID", uuid.toString());
+        sessionUuid.setPath("/");
+
+        return sessionUuid;
     }
 
-    public User save(String login, String password1) {
-        validateLoginNotTaken(login);
-        User user = User.builder()  // тут наверное надо использовать dto объект
+
+    public Cookie registerAndLogin(String login, String password1) {
+        User user = User.builder()
                 .login(login)
                 .password(BCrypt.hashpw(password1, BCrypt.gensalt()))
                 .build();
 
-        return userRepository.save(user);
+        userRepository.save(user);
 
+        UUID uuid = sessionService.saveSession(user);
+
+        Cookie sessionUuid = new Cookie("SESSION_UUID", uuid.toString());
+        sessionUuid.setPath("/"); // код дублируется, возможно надо куда-то выенсти
+
+        return sessionUuid;
     }
 
     //TODO не кидать общие исключения (сделать детальней)
-    private void validateLoginNotTaken(String login) {
-        if (userRepository.findUserByLogin(login).isPresent()) {
-            throw new IllegalArgumentException("Пользователь с таким логином уже зарегестрирован");
-        }
-    }
 
     private User findByLogin(String login) {
         return userRepository.findUserByLogin(login)
