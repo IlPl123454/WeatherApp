@@ -4,6 +4,8 @@ import jakarta.servlet.http.Cookie;
 import lombok.AllArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
+import ru.plenkkovii.weather.exception.WrongPasswordException;
 import ru.plenkkovii.weather.model.User;
 import ru.plenkkovii.weather.repository.UserRepository;
 
@@ -48,16 +50,15 @@ public class UserService {
         return sessionUuid;
     }
 
-    //TODO не кидать общие исключения (сделать детальней)
 
     private User findByLogin(String login) {
         return userRepository.findUserByLogin(login)
-                .orElseThrow(() -> new IllegalArgumentException("Вы ввели неверный логин или пароль"));
+                .orElseThrow(() -> new LoginAlreadyExistException("Вы ввели неверный логин или пароль"));
     }
 
     private void validateLogInPasswordEquals(String password1, String password2) {
         if (!BCrypt.checkpw(password1, password2)) {
-            throw new IllegalArgumentException("Вы ввели неверный логин или пароль");
+            throw new WrongPasswordException("Вы ввели неверный логин или пароль");
         }
     }
 }
