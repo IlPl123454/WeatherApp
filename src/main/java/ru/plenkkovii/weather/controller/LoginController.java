@@ -1,6 +1,7 @@
 package ru.plenkkovii.weather.controller;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -35,5 +36,12 @@ public class LoginController {
         resp.addCookie(sessionUuid);
 
         return "redirect:/home";
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest req, HttpServletResponse resp) {
+        userService.logout(req);
+
+        return "redirect:/index";
     }
 }
