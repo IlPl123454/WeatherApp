@@ -30,7 +30,7 @@ public class InMemorySessionService implements SessionService {
 
     @Transactional
     @Override
-    public UUID saveSession(User user) {
+    public UUID createSession(User user) {
         Duration sessionLifetime = Duration.ofHours(durationH)
                 .plus(Duration.ofMinutes(durationM)
                         .plus(Duration.ofSeconds(durationS)));
@@ -46,9 +46,11 @@ public class InMemorySessionService implements SessionService {
     @Override
     public Optional<Session> getSession(UUID uuid) {
         Session session = sessions.get(uuid);
+
         if (session != null && !isExpired(session)) {
             return Optional.of(session);
         }
+
         sessions.remove(uuid);
         return Optional.empty();
     }

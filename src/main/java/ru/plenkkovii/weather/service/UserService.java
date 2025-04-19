@@ -2,17 +2,14 @@ package ru.plenkkovii.weather.service;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
 import ru.plenkkovii.weather.exception.WrongPasswordException;
-import ru.plenkkovii.weather.model.Session;
 import ru.plenkkovii.weather.model.User;
 import ru.plenkkovii.weather.repository.UserRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -29,7 +26,7 @@ public class UserService {
 
         validateLogInPasswordEquals(password, user.getPassword());
 
-        UUID uuid = sessionService.saveSession(user);
+        UUID uuid = sessionService.createSession(user);
 
         Cookie sessionUuid = new Cookie("SESSION_UUID", uuid.toString());
         sessionUuid.setPath("/");
@@ -46,7 +43,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        UUID uuid = sessionService.saveSession(user);
+        UUID uuid = sessionService.createSession(user);
 
         Cookie sessionUuid = new Cookie("SESSION_UUID", uuid.toString());
         sessionUuid.setPath("/"); // код дублируется, возможно надо куда-то выенсти
