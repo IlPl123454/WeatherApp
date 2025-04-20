@@ -24,20 +24,21 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         String sessionId = null;
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("SESSION_UUID")) {
-                    sessionId = cookie.getValue();
-                    Optional<Session> session = sessionService.getSession(UUID.fromString(sessionId));
-                    if (session.isPresent()) {
-                        System.out.println("session found");
-                        request.setAttribute("login", session.get().getUser().getLogin());
-                        return true;
-                    }
-                }
-                }
+        if (cookies == null) {
+            response.sendRedirect("/index");
+            return false;
         }
 
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("SESSION_UUID")) {
+                sessionId = cookie.getValue();
+                Optional<Session> session = sessionService.getSession(UUID.fromString(sessionId));
+                if (session.isPresent()) {
+                    request.setAttribute("login", session.get().getUser().getLogin());
+                    return true;
+                }
+            }
+        }
         response.sendRedirect("/index");
         return false;
     }

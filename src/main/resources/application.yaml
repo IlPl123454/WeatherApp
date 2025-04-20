@@ -6,3 +6,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/weatherdb
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
+session:
+  duration: 10s
+
+

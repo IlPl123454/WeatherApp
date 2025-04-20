@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface SessionService {
 
-    UUID saveSession(User user);
+    UUID createSession(User user);
 
     Optional<Session> getSession(UUID sessionId);
 

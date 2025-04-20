@@ -5,7 +5,12 @@ CREATE TABLE locations
     user_id   INT          NOT NULL,
     latitude  DECIMAL      NOT NULL,
     longitude DECIMAL      NOT NULL,
+
+    CONSTRAINT unique_locations_coordinates
+        UNIQUE (name, latitude, longitude),
+
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+
 );
 
 COMMENT ON TABLE locations IS 'Локации пользователя';

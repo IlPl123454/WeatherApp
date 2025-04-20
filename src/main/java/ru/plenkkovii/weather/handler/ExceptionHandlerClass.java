@@ -1,8 +1,10 @@
 package ru.plenkkovii.weather.handler;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 
 @ControllerAdvice
 public class ExceptionHandlerClass {
@@ -12,5 +14,17 @@ public class ExceptionHandlerClass {
         model.addAttribute("error", ex.getMessage());
         return "error";
         // пока таким образом обрабботаем все исключения, потом подумаю как лучше сделать
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public String handleDuplicateLoginException(Exception ex, Model model) {
+        if (ex.getMessage().contains("unique_name")) {
+            model.addAttribute("error", "Пользователь с таким логином уже существует");
+            return "error";
+        } else {
+            model.addAttribute("error", ex.getMessage());
+        }
+
+        return "error";
     }
 }

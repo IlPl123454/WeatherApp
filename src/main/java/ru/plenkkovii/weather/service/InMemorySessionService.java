@@ -1,13 +1,13 @@
 package ru.plenkkovii.weather.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.plenkkovii.weather.model.Session;
 import ru.plenkkovii.weather.model.User;
 
-import java.time.Clock;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,14 +18,15 @@ public class InMemorySessionService implements SessionService {
 
     private final Map<UUID, Session> sessions = new ConcurrentHashMap<>();
 
-    private static final Duration SESSION_LIFETIME = Duration.ofSeconds(60);
+    @Value("${session.duration}")
+    private Duration duration;
 
     @Transactional
     @Override
-    public UUID saveSession(User user) {
+    public UUID createSession(User user) {
         UUID uuid = UUID.randomUUID();
-        sessions.put(uuid, new Session(uuid, user, LocalDateTime.now(Clock.systemUTC()).plus(SESSION_LIFETIME)));
-        // тут я два раза храню uuid, как ключ и как поле в Session, не хочу добавлять новый класс,
+        sessions.put(uuid, new Session(uuid, user, Instant.now().plus(duration)));
+        // тут я два раза храню uuid, как ключ и как поле в Session, не хочу добавлять новый класс
         // буду пользощваться который будет в БД
 
         return uuid;
@@ -34,9 +35,11 @@ public class InMemorySessionService implements SessionService {
     @Override
     public Optional<Session> getSession(UUID uuid) {
         Session session = sessions.get(uuid);
+
         if (session != null && !isExpired(session)) {
             return Optional.of(session);
         }
+
         sessions.remove(uuid);
         return Optional.empty();
     }
@@ -47,6 +50,6 @@ public class InMemorySessionService implements SessionService {
     }
 
     private boolean isExpired(Session session) {
-        return session.getExpiresAt().isBefore(LocalDateTime.now(Clock.systemUTC()));
+        return session.getExpiresAt().isBefore(Instant.now());
     }
 }
