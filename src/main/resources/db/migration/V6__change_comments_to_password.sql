@@ -1,1 +1,0 @@
-COMMENT ON COLUMN users.password IS 'Хэшированный пароль';
