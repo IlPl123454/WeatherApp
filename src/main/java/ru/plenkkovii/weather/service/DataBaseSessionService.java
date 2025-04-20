@@ -1,6 +1,5 @@
 package ru.plenkkovii.weather.service;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -19,30 +18,21 @@ import java.util.UUID;
 public class DataBaseSessionService implements SessionService {
 
     SessionRepository sessionRepository;
+    private final Duration sessionDuration;
 
-    @Value("${session.duration_h}")
-    private int durationH;
-
-    @Value("${session.duration_m}")
-    private int durationM;
-
-    @Value("${session.duration_s}")
-    private int durationS;
-
-    public DataBaseSessionService(SessionRepository sessionRepository) {
+    public DataBaseSessionService(SessionRepository sessionRepository,
+                                  @Value("${session.duration}") Duration sessionDuration) {
         this.sessionRepository = sessionRepository;
+        this.sessionDuration = sessionDuration;
     }
 
     @Override
     public UUID createSession(User user) {
-        Duration sessionLifetime = Duration.ofHours(durationH)
-                .plus(Duration.ofMinutes(durationM)
-                        .plus(Duration.ofSeconds(durationS)));
 
         Session session = Session.builder()
                 .id(UUID.randomUUID())
                 .user(user)
-                .expiresAt(Instant.now().plus(sessionLifetime))
+                .expiresAt(Instant.now().plus(sessionDuration))
                 .build();
 
         sessionRepository.save(session);

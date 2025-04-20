@@ -18,25 +18,14 @@ public class InMemorySessionService implements SessionService {
 
     private final Map<UUID, Session> sessions = new ConcurrentHashMap<>();
 
-    @Value("${session.duration_h}")
-    private int durationH;
-
-    @Value("${session.duration_m}")
-    private int durationM;
-
-    @Value("${session.duration_s}")
-    private int durationS;
-
+    @Value("${session.duration}")
+    private Duration duration;
 
     @Transactional
     @Override
     public UUID createSession(User user) {
-        Duration sessionLifetime = Duration.ofHours(durationH)
-                .plus(Duration.ofMinutes(durationM)
-                        .plus(Duration.ofSeconds(durationS)));
-
         UUID uuid = UUID.randomUUID();
-        sessions.put(uuid, new Session(uuid, user, Instant.now().plus(sessionLifetime)));
+        sessions.put(uuid, new Session(uuid, user, Instant.now().plus(duration)));
         // тут я два раза храню uuid, как ключ и как поле в Session, не хочу добавлять новый класс
         // буду пользощваться который будет в БД
 
