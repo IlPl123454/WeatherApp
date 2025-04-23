@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.plenkkovii.weather.service.UserService;
 
+import java.util.UUID;
+
 
 @AllArgsConstructor
 
@@ -31,16 +33,24 @@ public class LoginController {
                             @RequestParam @NotBlank String password,
                             HttpServletResponse resp) {
 
-        Cookie sessionUuid = userService.login(login, password);
+        UUID sessionUuid = userService.login(login, password);
 
-        resp.addCookie(sessionUuid);
+        Cookie session = new Cookie("SESSION_UUID", sessionUuid.toString());
+        session.setPath("/");
+        resp.addCookie(session);
 
         return "redirect:/home";
     }
 
     @PostMapping("/logout")
-    public String logout(HttpServletRequest req, HttpServletResponse resp) {
-        userService.logout(req);
+    public String logout(HttpServletRequest req) {
+        Cookie[] cookies = req.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("SESSION_UUID")) {
+                String sessionId = cookie.getValue();
+                userService.logout(sessionId);
+            }
+        }
 
         return "redirect:/index";
     }

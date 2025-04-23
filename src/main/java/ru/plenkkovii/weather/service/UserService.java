@@ -1,7 +1,5 @@
 package ru.plenkkovii.weather.service;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -21,21 +19,15 @@ public class UserService {
 
     private final SessionService sessionService;
 
-    public Cookie login(String username, String password) {
+    public UUID login(String username, String password) {
         User user = findByLogin(username);
 
         validateLogInPasswordEquals(password, user.getPassword());
 
-        UUID uuid = sessionService.createSession(user);
-
-        Cookie sessionUuid = new Cookie("SESSION_UUID", uuid.toString());
-        sessionUuid.setPath("/");
-
-        return sessionUuid;
+        return sessionService.createSession(user);
     }
 
-
-    public Cookie registerAndLogin(String login, String password1) {
+    public UUID registerAndLogin(String login, String password1) {
         User user = User.builder()
                 .login(login)
                 .password(BCrypt.hashpw(password1, BCrypt.gensalt()))
@@ -43,23 +35,11 @@ public class UserService {
 
         userRepository.save(user);
 
-        UUID uuid = sessionService.createSession(user);
-
-        Cookie sessionUuid = new Cookie("SESSION_UUID", uuid.toString());
-        sessionUuid.setPath("/"); // код дублируется, возможно надо куда-то выенсти
-
-        return sessionUuid;
+        return sessionService.createSession(user);
     }
 
-    public void logout(HttpServletRequest req) {
-        // в AuthorizationInterceptor проверили что сессия есть и активна
-        Cookie[] cookies = req.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("SESSION_UUID")) {
-                String sessionId = cookie.getValue();
-                sessionService.deleteSession(UUID.fromString(sessionId));
-            }
-        }
+    public void logout(String sessionId) {
+        sessionService.deleteSession(UUID.fromString(sessionId));
     }
 
 

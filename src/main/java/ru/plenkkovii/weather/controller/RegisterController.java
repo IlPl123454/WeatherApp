@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.plenkkovii.weather.service.UserService;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 
 @Controller
@@ -28,9 +30,11 @@ public class RegisterController {
                                HttpServletResponse resp) {
         //TODO добавить проверку правильно введенного второго пароля на клиенте
 
-        Cookie sessionUuid = userService.registerAndLogin(login, password);
+        UUID sessionUuid = userService.registerAndLogin(login, password);
 
-        resp.addCookie(sessionUuid);
+        Cookie session = new Cookie("SESSION_UUID", sessionUuid.toString());
+        session.setPath("/");
+        resp.addCookie(session);
 
         return "redirect:/home";
     }
