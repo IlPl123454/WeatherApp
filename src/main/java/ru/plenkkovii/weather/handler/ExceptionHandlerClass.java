@@ -20,7 +20,7 @@ public class ExceptionHandlerClass {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(value= HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(value= HttpStatus.CONFLICT)
     public String handleDuplicateLoginException(Exception ex, Model model) {
         if (ex.getMessage().contains("unique_name")) {
             model.addAttribute("error", "Пользователь с таким логином уже существует");

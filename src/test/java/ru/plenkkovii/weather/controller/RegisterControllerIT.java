@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(properties = "spring.profiles.active=test")
 @AutoConfigureMockMvc
-@Transactional //почему если убрать аннотацию, второй тест идет с ошибкой(unique login)
+@Transactional
 public class RegisterControllerIT {
 
     @Autowired

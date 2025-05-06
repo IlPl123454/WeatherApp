@@ -1,9 +1,9 @@
 package ru.plenkkovii.weather.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
 import ru.plenkkovii.weather.exception.WrongPasswordException;
 import ru.plenkkovii.weather.model.User;
 import ru.plenkkovii.weather.repository.UserRepository;
@@ -16,7 +16,6 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
-
     private final SessionService sessionService;
 
     public UUID login(String username, String password) {
@@ -45,7 +44,7 @@ public class UserService {
 
     private User findByLogin(String login) {
         return userRepository.findUserByLogin(login)
-                .orElseThrow(() -> new LoginAlreadyExistException("Вы ввели неверный логин или пароль"));
+                .orElseThrow(() -> new EntityNotFoundException("Вы ввели неверный логин или пароль"));
     }
 
     private void validateLogInPasswordEquals(String password1, String password2) {
