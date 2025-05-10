@@ -1,62 +1,49 @@
 package ru.plenkkovii.weather.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.plenkkovii.weather.config.EnvConfig;
+import ru.plenkkovii.weather.dto.WeatherApiResponseDTO;
+import ru.plenkkovii.weather.dto.WeatherViewResponseDTO;
 import ru.plenkkovii.weather.model.Location;
+import ru.plenkkovii.weather.repository.LocationRepository;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class WeatherService {
 
-    private final HttpClient httpClient;
-    private final EnvConfig.WeatherApiConfig weatherApiConfig;
+    LocationRepository locationRepository;
+    OpenWeatherMapApiService openWeatherMapApiService;
 
-    public WeatherService(HttpClient httpClient, EnvConfig.WeatherApiConfig weatherApiConfig) {
-        this.httpClient = httpClient;
-        this.weatherApiConfig = weatherApiConfig;
-    }
+    public List<WeatherViewResponseDTO> getWeatherByUserId(int id) throws IOException, InterruptedException {
+        List<WeatherViewResponseDTO> weatherResponseDTOs = new ArrayList<>();
 
-    public String getWeatherByCityName(String cityName) throws IOException, InterruptedException {
-        String requestUri = weatherApiConfig.getBaseWeatherUrl() + "?q=" + cityName + "&appid=" + weatherApiConfig.getApiKey();
+        List<Location> locations = locationRepository.findByUserId(id);
+        if (locations.isEmpty()) {
+            return weatherResponseDTOs;
+        }
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(requestUri))
-                .GET()
-                .build();
+        for (Location location : locations) {
+            WeatherApiResponseDTO weatherApiResponseDTO = openWeatherMapApiService
+                    .getWeatherByCityCoordinates(location.getLatitude(), location.getLongitude());
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            // может тут лучше маппер использовать
 
-        return response.body();
-    }
+            WeatherViewResponseDTO weatherResponseDTO = WeatherViewResponseDTO
+                    .builder()
+                    .city(location.getName())
+                    .country(weatherApiResponseDTO.getSystem().getCountry())
+                    .temp(weatherApiResponseDTO.getMain().getTemp())
+                    .feelsLike(weatherApiResponseDTO.getMain().getFeelsLike())
+                    .weather(weatherApiResponseDTO.getWeather().getFirst().getDescription())
+                    .build();
 
-    public String getWeatherByCityCoordinates(String longitude, String latitude) throws IOException, InterruptedException {
-        String requestUri = String.format("%s?lat=%s&lon=%s&appid=%s", weatherApiConfig.getBaseWeatherUrl(), latitude, longitude, weatherApiConfig.getApiKey());
+            weatherResponseDTOs.add(weatherResponseDTO);
+        }
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(requestUri))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response.body();
-    }
-
-    public String getCoordinatesByCityName(String cityName) throws IOException, InterruptedException {
-        String requestUri = String.format("%s?q=%s&limit=%s&appid=%s", weatherApiConfig.getBaseGeocodingUrl(), cityName, weatherApiConfig.getLimit(), weatherApiConfig.getApiKey());
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(requestUri))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response.body();
+        return weatherResponseDTOs;
     }
 }

@@ -7,7 +7,7 @@ CREATE TABLE locations
     longitude DECIMAL      NOT NULL,
 
     CONSTRAINT unique_locations_coordinates
-        UNIQUE (name, latitude, longitude),
+        UNIQUE (name, user_id, latitude, longitude),
 
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 

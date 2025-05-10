@@ -12,15 +12,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ExceptionHandlerClass {
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(value= HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleException(Exception ex, Model model) {
         model.addAttribute("error", ex.getMessage());
         return "error";
-        // пока таким образом обрабботаем все исключения, потом подумаю как лучше сделать
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(value= HttpStatus.CONFLICT)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
     public String handleDuplicateLoginException(Exception ex, Model model) {
         if (ex.getMessage().contains("unique_name")) {
             model.addAttribute("error", "Пользователь с таким логином уже существует");

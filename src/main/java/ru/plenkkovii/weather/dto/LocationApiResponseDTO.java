@@ -1,18 +1,21 @@
 package ru.plenkkovii.weather.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.plenkkovii.weather.model.User;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LocationDTO {
+public class LocationApiResponseDTO {
     private String name;
-    private User user;
+    @JsonProperty("lat")
     private double latitude;
+    @JsonProperty("lon")
     private double longitude;
+    private String country;
+    private String state;
 }
