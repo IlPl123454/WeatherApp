@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: weather
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+
+session:
+  duration: 1s

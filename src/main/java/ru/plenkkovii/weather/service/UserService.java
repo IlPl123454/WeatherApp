@@ -1,11 +1,9 @@
 package ru.plenkkovii.weather.service;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
 import ru.plenkkovii.weather.exception.WrongPasswordException;
 import ru.plenkkovii.weather.model.User;
 import ru.plenkkovii.weather.repository.UserRepository;
@@ -18,24 +16,17 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
-
     private final SessionService sessionService;
 
-    public Cookie login(String username, String password) {
+    public UUID login(String username, String password) {
         User user = findByLogin(username);
 
         validateLogInPasswordEquals(password, user.getPassword());
 
-        UUID uuid = sessionService.createSession(user);
-
-        Cookie sessionUuid = new Cookie("SESSION_UUID", uuid.toString());
-        sessionUuid.setPath("/");
-
-        return sessionUuid;
+        return sessionService.createSession(user);
     }
 
-
-    public Cookie registerAndLogin(String login, String password1) {
+    public UUID registerAndLogin(String login, String password1) {
         User user = User.builder()
                 .login(login)
                 .password(BCrypt.hashpw(password1, BCrypt.gensalt()))
@@ -43,29 +34,17 @@ public class UserService {
 
         userRepository.save(user);
 
-        UUID uuid = sessionService.createSession(user);
-
-        Cookie sessionUuid = new Cookie("SESSION_UUID", uuid.toString());
-        sessionUuid.setPath("/"); // код дублируется, возможно надо куда-то выенсти
-
-        return sessionUuid;
+        return sessionService.createSession(user);
     }
 
-    public void logout(HttpServletRequest req) {
-        // в AuthorizationInterceptor проверили что сессия есть и активна
-        Cookie[] cookies = req.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("SESSION_UUID")) {
-                String sessionId = cookie.getValue();
-                sessionService.deleteSession(UUID.fromString(sessionId));
-            }
-        }
+    public void logout(String sessionId) {
+        sessionService.deleteSession(UUID.fromString(sessionId));
     }
 
 
     private User findByLogin(String login) {
         return userRepository.findUserByLogin(login)
-                .orElseThrow(() -> new LoginAlreadyExistException("Вы ввели неверный логин или пароль"));
+                .orElseThrow(() -> new EntityNotFoundException("Вы ввели неверный логин или пароль"));
     }
 
     private void validateLogInPasswordEquals(String password1, String password2) {

@@ -1,0 +1,8 @@
+###
+GET http://localhost:8080/index
+
+###
+POST http://localhost:8080/login?login=Илья&password=123
+
+###
+GET http://localhost:8080/home
