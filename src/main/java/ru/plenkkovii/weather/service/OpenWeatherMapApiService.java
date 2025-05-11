@@ -25,10 +25,11 @@ public class OpenWeatherMapApiService {
 
     public WeatherApiResponseDTO getWeatherByCityCoordinates(double longitude, double latitude)
             throws IOException, InterruptedException {
-        String requestUri = String.format("%s?lat=%s&lon=%s&appid=%s",
+        //TODO проверить порядок широты и долготы
+        String requestUri = String.format("%s?lat=%s&lon=%s&appid=%s&units=metric",
                 weatherApiConfig.getBaseWeatherUrl(),
-                latitude,
                 longitude,
+                latitude,
                 weatherApiConfig.getApiKey());
 
         HttpRequest request = HttpRequest.newBuilder()
