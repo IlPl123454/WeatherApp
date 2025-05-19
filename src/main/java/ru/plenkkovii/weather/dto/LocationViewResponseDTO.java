@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class WeatherViewResponseDTO {
-    private String city;
+public class LocationViewResponseDTO {
+    private String name;
     private String country;
     private double temp;
     private double feelsLike;

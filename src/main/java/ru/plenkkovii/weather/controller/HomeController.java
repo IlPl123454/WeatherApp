@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import ru.plenkkovii.weather.dto.WeatherViewResponseDTO;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import ru.plenkkovii.weather.dto.LocationViewResponseDTO;
 import ru.plenkkovii.weather.model.Session;
+import ru.plenkkovii.weather.service.LocationService;
 import ru.plenkkovii.weather.service.SessionService;
 import ru.plenkkovii.weather.service.WeatherService;
 
@@ -22,6 +25,7 @@ public class HomeController {
 
     private final SessionService sessionService;
     private final WeatherService weatherService;
+    private final LocationService locationService;
 
 
 
@@ -40,11 +44,18 @@ public class HomeController {
         //TODO рабзбраться с проверкой тоже
         Optional<Session> session = sessionService.getSession(UUID.fromString(sessionId));
 
-        List<WeatherViewResponseDTO> weathers = weatherService.getWeatherByUserId(session.get().getUser().getId());
+        List<LocationViewResponseDTO> locations = weatherService.getWeatherByUserId(session.get().getUser().getId());
 
-        model.addAttribute("weathers", weathers);
+        model.addAttribute("locations", locations);
 
         return "home";
+    }
+
+    @PostMapping("/delete-location")
+    public String deleteLocation(@RequestParam String name) throws IOException {
+        locationService.deleteLocationByName(name);
+
+        return "redirect:/home";
     }
 
     @GetMapping("/index")

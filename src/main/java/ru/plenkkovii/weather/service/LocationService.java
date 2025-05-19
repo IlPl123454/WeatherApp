@@ -2,6 +2,7 @@ package ru.plenkkovii.weather.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.plenkkovii.weather.dto.LocationApiResponseDTO;
 import ru.plenkkovii.weather.model.Location;
 import ru.plenkkovii.weather.model.Session;
@@ -17,13 +18,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class LocationService {
 
-    SessionRepository sessionRepository;
-    UserRepository userRepository;
-    LocationRepository locationRepository;
+    private final SessionRepository sessionRepository;
+    private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
 
-    public Location addLocation(LocationApiResponseDTO locationApiResponseDTO, UUID userUuid) {
+    public Location addLocationRequest(LocationApiResponseDTO locationApiResponseDTO, UUID sessionUuid) {
 
-        Optional<Session> session = sessionRepository.findById(userUuid);
+        Optional<Session> session = sessionRepository.findById(sessionUuid);
 
         //TODO добавить проверку на то что сессия существует, хотя фильтр проверяет перед этим..
         Optional<User> byId = userRepository.findById(session.get().getUser().getId());
@@ -38,5 +39,9 @@ public class LocationService {
         locationRepository.save(location);
 
         return location;
+    }
+    @Transactional
+    public void deleteLocationByName(String name) {
+        locationRepository.deleteByName(name);
     }
 }
