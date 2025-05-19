@@ -28,7 +28,6 @@ public class HomeController {
     private final LocationService locationService;
 
 
-
     @GetMapping("/home")
     public String home(HttpServletRequest req, Model model) throws IOException, InterruptedException {
         Cookie[] cookies = req.getCookies();
@@ -52,7 +51,7 @@ public class HomeController {
     }
 
     @PostMapping("/delete-location")
-    public String deleteLocation(@RequestParam String name) throws IOException {
+    public String deleteLocation(@RequestParam String name) {
         locationService.deleteLocationByName(name);
 
         return "redirect:/home";
