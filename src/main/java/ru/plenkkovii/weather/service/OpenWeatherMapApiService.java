@@ -1,11 +1,15 @@
 package ru.plenkkovii.weather.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.plenkkovii.weather.config.EnvConfig;
 import ru.plenkkovii.weather.dto.LocationApiResponseDTO;
+import ru.plenkkovii.weather.dto.LocationSearchViewResponseDTO;
 import ru.plenkkovii.weather.dto.WeatherApiResponseDTO;
+import ru.plenkkovii.weather.mapper.WeatherApiMapper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -26,11 +30,12 @@ public class OpenWeatherMapApiService {
     public WeatherApiResponseDTO getWeatherByCityCoordinates(double longitude, double latitude)
             throws IOException, InterruptedException {
         //TODO проверить порядок широты и долготы
-        String requestUri = String.format("%s?lat=%s&lon=%s&appid=%s&units=metric",
-                weatherApiConfig.getBaseWeatherUrl(),
-                longitude,
-                latitude,
-                weatherApiConfig.getApiKey());
+        String requestUri = UriComponentsBuilder.fromUriString(weatherApiConfig.getBaseWeatherUrl())
+                .queryParam("lat", longitude)
+                .queryParam("lon", latitude)
+                .queryParam("appid", weatherApiConfig.getApiKey())
+                .queryParam("units", "metric")
+                .build().toUriString();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(requestUri))
@@ -42,7 +47,7 @@ public class OpenWeatherMapApiService {
         return objectMapper.readValue(response.body(), WeatherApiResponseDTO.class);
     }
 
-    public List<LocationApiResponseDTO> getLocationsByCityName(String cityName)
+    public List<LocationSearchViewResponseDTO> getLocationsByCityName(String cityName)
             throws IOException, InterruptedException {
         String requestUri = String.format("%s?q=%s&limit=%s&appid=%s", weatherApiConfig.getBaseGeocodingUrl(),
                 cityName, weatherApiConfig.getLimit(), weatherApiConfig.getApiKey());
@@ -54,8 +59,11 @@ public class OpenWeatherMapApiService {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        LocationApiResponseDTO[] locationDTOS = objectMapper.readValue(response.body(), LocationApiResponseDTO[].class);
+        List<LocationApiResponseDTO> locationApiResponseDTOS = objectMapper
+                .readValue(response.body(), new TypeReference<>() {});
 
-        return List.of(locationDTOS);
+
+
+        return WeatherApiMapper.toLocationSearchResponseDTOList(locationApiResponseDTOS);
     }
 }

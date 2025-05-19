@@ -14,9 +14,13 @@
     <button class="btn btn-outline-success" type="submit">Поиск</button>
 </form>
 
-<div th:each="weather : ${weathers}">
-    <span th:text="${weather.getCity()}"></span>
-    <span th:text="${weather.getTemp()}"></span>
+<div th:each="location : ${locations}">
+    <form action="delete-location" method="post" th:object="${location}">
+        <span th:text="${location.getName()}"></span>
+        <input type="hidden" name="name" th:value="${location.getName()}">
+        <button class="btn btn-primary" type="submit">Удалить локацию</button>
+    </form>
+    <span th:text="${location.getTemp()}"></span>
 </div>
 
 </body>
