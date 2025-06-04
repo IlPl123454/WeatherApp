@@ -31,7 +31,7 @@ public class WeatherService {
             WeatherApiResponseDTO weatherApiResponseDTO = openWeatherMapApiService
                     .getWeatherByCityCoordinates(location.getLatitude(), location.getLongitude());
 
-            LocationViewResponseDTO weatherResponseDTO = WeatherApiMapper.toWeatherResponseDTO(weatherApiResponseDTO);
+            LocationViewResponseDTO weatherResponseDTO = WeatherApiMapper.toLocationViewResponseDTO(weatherApiResponseDTO, location.getName());
 
             weatherResponseDTOs.add(weatherResponseDTO);
         }

@@ -22,8 +22,8 @@ import java.util.UUID;
 @Controller
 public class LocationSearchController {
 
-    OpenWeatherMapApiService weatherService;
-    LocationService locationService;
+    private final OpenWeatherMapApiService weatherService;
+    private final LocationService locationService;
 
     @GetMapping("/city-search")
     public String searchByCityName(@RequestParam String cityname, Model model) throws IOException, InterruptedException {
@@ -45,7 +45,10 @@ public class LocationSearchController {
             }
         }
 
-        //TODO разобраться с проверкой на null
+        if (sessionId == null) {
+            return "redirect:/index";
+        }
+
         locationService.addLocationRequest(city, UUID.fromString(sessionId));
 
         return "redirect:/home";

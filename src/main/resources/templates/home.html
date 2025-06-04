@@ -10,17 +10,38 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <form class="d-flex" role="search" action="/city-search" method="get">
-    <input name="cityname" class="form-control me-2" type="search" placeholder="Поиск города по названию" aria-label="Search"/>
+    <input name="cityname" class="form-control me-2" type="search" placeholder="Поиск города по названию"
+           aria-label="Search"/>
     <button class="btn btn-outline-success" type="submit">Поиск</button>
 </form>
 
-<div th:each="location : ${locations}">
-    <form action="delete-location" method="post" th:object="${location}">
-        <span th:text="${location.getName()}"></span>
-        <input type="hidden" name="name" th:value="${location.getName()}">
-        <button class="btn btn-primary" type="submit">Удалить локацию</button>
-    </form>
-    <span th:text="${location.getTemp()}"></span>
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col" style="width: 20rem;" th:each="location : ${locations}">
+        <div class="card">
+            <div class="card-body">
+                <h1>
+                    <span th:text="${location.getTemp()} + ' °C'">°C</span>
+                </h1>
+                <h2>
+                    <span th:text="${location.getName()} + ', ' + ${location.getCountry()}"></span>
+                </h2>
+                <p>
+                    <span th:text="'Feels like: ' + ${location.getFeelsLike()} + ' °C, '"></span>
+                    <span th:text="${location.getWeather()}"></span>
+                </p>
+                <p>
+                    <span th:text="'Humidity: ' + ${location.getHumidity()} + '%'"></span>
+                </p>
+                <form action="delete-location" method="post" th:object="${location}">
+                    <p>
+                        <input type="hidden" name="name" th:value="${location.getName()}">
+                        <input type="hidden" name="_method" value="delete" />
+                        <button class="btn btn-primary" type="submit">Удалить локацию</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>

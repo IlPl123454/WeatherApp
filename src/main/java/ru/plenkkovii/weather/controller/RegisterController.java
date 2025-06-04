@@ -29,7 +29,6 @@ public class RegisterController {
                                @RequestParam @NotBlank String password,
                                HttpServletResponse resp) {
         //TODO добавить проверку правильно введенного второго пароля на клиенте
-
         UUID sessionUuid = userService.registerAndLogin(login, password);
 
         Cookie session = new Cookie("SESSION_UUID", sessionUuid.toString());

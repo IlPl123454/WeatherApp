@@ -10,7 +10,6 @@ public class WeatherApiResponseDTO {
 
     @JsonProperty("coord")
     private Coordinates coordinates;
-    //TODO проверить почему тут List, сделать проверку
     @JsonProperty("weather")
     private List<Weather> weather;
     @JsonProperty("base")

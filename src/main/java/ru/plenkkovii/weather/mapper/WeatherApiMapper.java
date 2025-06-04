@@ -9,34 +9,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherApiMapper {
-    public static LocationViewResponseDTO toWeatherResponseDTO(WeatherApiResponseDTO dto) {
+    public static LocationViewResponseDTO toLocationViewResponseDTO(WeatherApiResponseDTO dto, String name) {
         WeatherApiResponseDTO.Weather weather = dto.getWeather().getFirst();
 
         return LocationViewResponseDTO.builder()
-                .name(dto.getName())
+                .name(name)
                 .country(dto.getSystem().getCountry())
-                .temp(dto.getMain().getTemp())
-                .feelsLike(dto.getMain().getFeelsLike())
+                .temp((int) dto.getMain().getTemp())
+                .feelsLike((int) dto.getMain().getFeelsLike())
                 .weather(weather.getDescription())
                 .humidity(dto.getMain().getHumidity())
                 .build();
     }
 
-    public static List<LocationSearchViewResponseDTO> toLocationSearchResponseDTOList(List<LocationApiResponseDTO> dtoList) {
-        List<LocationSearchViewResponseDTO> locationSearchResponseDTOList = new ArrayList<>();
-
-        for (LocationApiResponseDTO dto : dtoList) {
-            locationSearchResponseDTOList.add(LocationSearchViewResponseDTO
-                    .builder()
-                    .name(dto.getName())
-                    .state(dto.getState())
-                    .country(dto.getCountry())
-                    .latitude(dto.getLatitude())
-                    .longitude(dto.getLongitude())
-                    .build()
-            );
-        }
-
-        return locationSearchResponseDTOList;
+    public static LocationSearchViewResponseDTO toLocationSearchViewResponseDTO(LocationApiResponseDTO dto) {
+        return LocationSearchViewResponseDTO
+                .builder()
+                .name(dto.getName())
+                .state(dto.getState())
+                .country(dto.getCountry())
+                .latitude(dto.getLatitude())
+                .longitude(dto.getLongitude())
+                .build();
     }
 }
