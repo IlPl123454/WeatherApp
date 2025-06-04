@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.plenkkovii.weather.dto.LocationApiResponseDTO;
+import ru.plenkkovii.weather.dto.LocationSearchViewResponseDTO;
 import ru.plenkkovii.weather.service.LocationService;
 import ru.plenkkovii.weather.service.OpenWeatherMapApiService;
 
@@ -21,12 +22,12 @@ import java.util.UUID;
 @Controller
 public class LocationSearchController {
 
-    OpenWeatherMapApiService weatherService;
-    LocationService locationService;
+    private final OpenWeatherMapApiService weatherService;
+    private final LocationService locationService;
 
     @GetMapping("/city-search")
     public String searchByCityName(@RequestParam String cityname, Model model) throws IOException, InterruptedException {
-        List<LocationApiResponseDTO> weatherByCityName = weatherService.getLocationsByCityName(cityname);
+        List<LocationSearchViewResponseDTO> weatherByCityName = weatherService.getLocationsByCityName(cityname);
 
         model.addAttribute("cityNames", weatherByCityName);
 
@@ -44,8 +45,11 @@ public class LocationSearchController {
             }
         }
 
-        //TODO разобраться с проверкой на null
-        locationService.addLocation(city, UUID.fromString(sessionId));
+        if (sessionId == null) {
+            return "redirect:/index";
+        }
+
+        locationService.addLocationRequest(city, UUID.fromString(sessionId));
 
         return "redirect:/home";
     }

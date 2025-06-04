@@ -5,9 +5,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import ru.plenkkovii.weather.dto.WeatherViewResponseDTO;
+import org.springframework.web.bind.annotation.RequestParam;
+import ru.plenkkovii.weather.dto.LocationViewResponseDTO;
 import ru.plenkkovii.weather.model.Session;
+import ru.plenkkovii.weather.service.LocationService;
 import ru.plenkkovii.weather.service.SessionService;
 import ru.plenkkovii.weather.service.WeatherService;
 
@@ -22,7 +25,7 @@ public class HomeController {
 
     private final SessionService sessionService;
     private final WeatherService weatherService;
-
+    private final LocationService locationService;
 
 
     @GetMapping("/home")
@@ -30,21 +33,33 @@ public class HomeController {
         Cookie[] cookies = req.getCookies();
         String sessionId = null;
 
-        //TODO сделать сервис для работы с куками
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("SESSION_UUID")) {
                 sessionId = cookie.getValue();
             }
         }
 
-        //TODO рабзбраться с проверкой тоже
+        if (sessionId == null) {
+            return "redirect:/index";
+        }
+
         Optional<Session> session = sessionService.getSession(UUID.fromString(sessionId));
+        if (session.isEmpty()) {
+            return "redirect:/index";
+        }
 
-        List<WeatherViewResponseDTO> weathers = weatherService.getWeatherByUserId(session.get().getUser().getId());
+        List<LocationViewResponseDTO> locations = weatherService.getWeatherByUserId(session.get().getUser().getId());
 
-        model.addAttribute("weathers", weathers);
+        model.addAttribute("locations", locations);
 
         return "home";
+    }
+
+    @DeleteMapping("/delete-location")
+    public String deleteLocation(@RequestParam String name) {
+        locationService.deleteLocationByName(name);
+
+        return "redirect:/home";
     }
 
     @GetMapping("/index")
