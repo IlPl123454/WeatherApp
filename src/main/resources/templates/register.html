@@ -6,20 +6,24 @@
 </head>
 <body>
 <h2 class="text-center mb-5">Регистрация</h2>
-<form th:action="@{/register}" method="post">
+<form th:action="@{/register}" method="post" th:object="${registrationDto}">
 
     <div class="mb-3">
         <label for="login" class="form-label">Логин</label>
-        <input type="text" class="form-control" id="login" aria-describedby="login" name="login">
+        <input type="text" th:field="*{login}" id="login" class="form-control" required>
+        <div class="text-danger" th:if="${#fields.hasErrors('login')}" th:errors="*{login}"></div>
     </div>
     <div class="mb-3">
         <label for="password1" class="form-label">Пароль</label>
-        <input type="password" class="form-control" id="password1" name="password">
+        <input type="password" class="form-control" id="password1" th:field="*{password1}" required>
+        <div class="text-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}"></div>
     </div>
     <div class="mb-3">
         <label for="password2" class="form-label">Повторите пароль</label>
-        <input type="password" class="form-control" id="password2" name="password2">
+        <input type="password" class="form-control" id="password2" th:field="*{password2}" required>
+        <div class="text-danger" th:if="${#fields.hasErrors('password2')}" th:errors="*{password2}"></div>
     </div>
+    <div class="text-danger" th:if="${passwordMismatch}" th:text="${passwordMismatch}"></div>
 
     <button type="submit" class="btn btn-primary">Submit</button>
     <p class="mt-2 text-center">Уже есть аккаунт? <a href="/index">Войдите тут</a></p>

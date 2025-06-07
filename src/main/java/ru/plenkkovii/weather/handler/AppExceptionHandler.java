@@ -1,33 +1,30 @@
 package ru.plenkkovii.weather.handler;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
 
-
+@Slf4j
 @ControllerAdvice
 public class AppExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleException(Exception ex, Model model) {
-        model.addAttribute("error", ex.getMessage());
+        log.error(ex.getMessage(), ex);
+
+        model.addAttribute("error", "Возникла непредвиденная ошибка.");
         return "error";
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler(LoginAlreadyExistException.class)
     @ResponseStatus(value = HttpStatus.CONFLICT)
-    public String handleDuplicateLoginException(Exception ex, Model model) {
-        if (ex.getMessage().contains("unique_name")) {
-            model.addAttribute("error", "Пользователь с таким логином уже существует");
-            return "error";
-        } else {
-            model.addAttribute("error", ex.getMessage());
-        }
-
+    public String handleLoginAlreadyExistException(LoginAlreadyExistException ex, Model model) {
+        model.addAttribute("error", ex.getMessage());
         return "error";
     }
 }

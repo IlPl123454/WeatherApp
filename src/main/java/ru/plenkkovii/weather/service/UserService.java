@@ -2,8 +2,11 @@ package ru.plenkkovii.weather.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
 import ru.plenkkovii.weather.exception.WrongPasswordException;
 import ru.plenkkovii.weather.model.User;
 import ru.plenkkovii.weather.repository.UserRepository;
@@ -32,7 +35,15 @@ public class UserService {
                 .password(BCrypt.hashpw(password1, BCrypt.gensalt()))
                 .build();
 
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof ConstraintViolationException && e.getMessage().contains("unique_name")) {
+                throw new LoginAlreadyExistException("Пользователь с таким логином уже существет");
+            }
+
+            throw e;
+        }
 
         return sessionService.createSession(user);
     }

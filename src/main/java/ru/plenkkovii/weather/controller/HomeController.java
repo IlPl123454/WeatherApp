@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.plenkkovii.weather.dto.LocationViewResponseDTO;
+import ru.plenkkovii.weather.dto.LoginDTO;
 import ru.plenkkovii.weather.model.Session;
 import ru.plenkkovii.weather.service.LocationService;
 import ru.plenkkovii.weather.service.SessionService;
@@ -30,6 +31,7 @@ public class HomeController {
 
     @GetMapping("/home")
     public String home(HttpServletRequest req, Model model) throws IOException, InterruptedException {
+
         Cookie[] cookies = req.getCookies();
         String sessionId = null;
 
@@ -63,7 +65,8 @@ public class HomeController {
     }
 
     @GetMapping("/index")
-    public String index() {
+    public String index(Model model) {
+        model.addAttribute("loginDto", new LoginDTO());
         return "index";
     }
 }

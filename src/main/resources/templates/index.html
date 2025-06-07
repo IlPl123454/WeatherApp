@@ -8,14 +8,16 @@
 <body>
 <div class="container">
     <h2 class="text-center mb-5">Добро пожаловать в приложение погода!</h2>
-    <form th:action="@{/login}" method="post">
+    <form th:action="@{/login}" method="post" th:object="${loginDto}">
         <div class="mb-3">
             <label for="login" class="form-label">Логин</label>
-            <input type="text" class="form-control" id="login" aria-describedby="login" name="login">
+            <input type="text" class="form-control" id="login" aria-describedby="login" th:field="*{login}">
+            <div class="text-danger" th:if="${#fields.hasErrors('login')}" th:errors="*{login}"></div>
         </div>
         <div class="mb-3">
             <label for="password" class="form-label">Пароль</label>
-            <input type="password" class="form-control" id="password" name="password">
+            <input type="password" class="form-control" id="password" th:field="*{password}">
+            <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
         <p class="mt-2 text-center">Еще нет аккаунта? <a href="/register">Зарегестрируйтесь тут</a></p>
