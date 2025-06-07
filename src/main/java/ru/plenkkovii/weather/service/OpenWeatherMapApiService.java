@@ -47,6 +47,7 @@ public class OpenWeatherMapApiService {
                 .queryParam("units", "metric")
                 .build().toUriString();
 
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(requestUri))
                 .GET()
@@ -64,7 +65,7 @@ public class OpenWeatherMapApiService {
                 .queryParam("q", cityName)
                 .queryParam("limit", geocodingLimitNumber)
                 .queryParam("appid", openweatherApiKey)
-                .build().toUriString();
+                .build().encode().toUriString();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(requestUri))
@@ -76,6 +77,7 @@ public class OpenWeatherMapApiService {
         List<LocationApiResponseDTO> locationApiResponseDTOS = objectMapper
                 .readValue(response.body(), new TypeReference<>() {
                 });
+
 
         return locationApiResponseDTOS.stream()
                 .map(WeatherApiMapper::toLocationSearchViewResponseDTO)
