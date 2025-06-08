@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
+import ru.plenkkovii.weather.exception.*;
 
 @Slf4j
 @ControllerAdvice
@@ -21,9 +21,14 @@ public class AppExceptionHandler {
         return "error";
     }
 
-    @ExceptionHandler(LoginAlreadyExistException.class)
+    @ExceptionHandler({LoginAlreadyExistException.class,
+            UserNotFoundException.class,
+            SessionExpiredException.class,
+            WrongPasswordException.class,
+            LocationAlreadyExistException.class
+    })
     @ResponseStatus(value = HttpStatus.CONFLICT)
-    public String handleLoginAlreadyExistException(LoginAlreadyExistException ex, Model model) {
+    public String handleLoginAlreadyExistException(Exception ex, Model model) {
         model.addAttribute("error", ex.getMessage());
         return "error";
     }

@@ -1,9 +1,13 @@
 package ru.plenkkovii.weather.service;
 
 import lombok.AllArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.plenkkovii.weather.dto.LocationApiResponseDTO;
+import ru.plenkkovii.weather.exception.LocationAlreadyExistException;
+import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
 import ru.plenkkovii.weather.exception.SessionExpiredException;
 import ru.plenkkovii.weather.exception.UserNotFoundException;
 import ru.plenkkovii.weather.model.Location;
@@ -25,9 +29,9 @@ public class LocationService {
 
     public Location addLocationRequest(LocationApiResponseDTO locationApiResponseDTO, UUID sessionUuid) {
 
-        Session session = sessionRepository.findById(sessionUuid).orElseThrow(() -> new SessionExpiredException("Session not found"));
+        Session session = sessionRepository.findById(sessionUuid).orElseThrow(() -> new SessionExpiredException("Сессия не найдена"));
 
-        User user = userRepository.findById(session.getUser().getId()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findById(session.getUser().getId()).orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
 
         Location location = Location.builder()
                 .name(locationApiResponseDTO.getName())
@@ -36,7 +40,15 @@ public class LocationService {
                 .user(user)
                 .build();
 
-        locationRepository.save(location);
+        try {
+            locationRepository.save(location);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof ConstraintViolationException && e.getMessage().contains("unique_locations_coordinates")) {
+                throw new LocationAlreadyExistException("Эта локация уже сохранена для вашего аккаунта");
+            }
+
+            throw e;
+        }
 
         return location;
     }
