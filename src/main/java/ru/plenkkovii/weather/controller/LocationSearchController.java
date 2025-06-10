@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.plenkkovii.weather.dto.LocationApiResponseDTO;
 import ru.plenkkovii.weather.dto.LocationSearchViewResponseDTO;
+import ru.plenkkovii.weather.model.Session;
 import ru.plenkkovii.weather.service.LocationService;
 import ru.plenkkovii.weather.service.OpenWeatherMapApiService;
+import ru.plenkkovii.weather.service.SessionService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -24,6 +27,7 @@ public class LocationSearchController {
 
     private final OpenWeatherMapApiService weatherService;
     private final LocationService locationService;
+    private final SessionService sessionService;
 
     @GetMapping("/city-search")
     public String searchByCityName(@RequestParam String cityname, Model model) throws IOException, InterruptedException {
@@ -35,21 +39,14 @@ public class LocationSearchController {
     }
 
     @PostMapping("/city-search")
-    public String addLocation(@ModelAttribute LocationApiResponseDTO city, HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String sessionId = null;
+    public String addLocation(@ModelAttribute LocationApiResponseDTO city, HttpServletRequest req) {
+        Optional<Session> session = sessionService.getSessionFromCookie(req.getCookies());
 
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("SESSION_UUID")) {
-                sessionId = cookie.getValue();
-            }
-        }
-
-        if (sessionId == null) {
+        if (session.isEmpty()) {
             return "redirect:/index";
         }
 
-        locationService.addLocationRequest(city, UUID.fromString(sessionId));
+        locationService.addLocationRequest(city, session.get().getId());
 
         return "redirect:/home";
     }

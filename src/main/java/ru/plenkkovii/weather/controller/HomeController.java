@@ -31,21 +31,8 @@ public class HomeController {
 
     @GetMapping("/home")
     public String home(HttpServletRequest req, Model model) throws IOException, InterruptedException {
+        Optional<Session> session = sessionService.getSessionFromCookie(req.getCookies());
 
-        Cookie[] cookies = req.getCookies();
-        String sessionId = null;
-
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("SESSION_UUID")) {
-                sessionId = cookie.getValue();
-            }
-        }
-
-        if (sessionId == null) {
-            return "redirect:/index";
-        }
-
-        Optional<Session> session = sessionService.getSession(UUID.fromString(sessionId));
         if (session.isEmpty()) {
             return "redirect:/index";
         }

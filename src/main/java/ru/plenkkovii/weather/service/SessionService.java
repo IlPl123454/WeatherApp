@@ -1,5 +1,6 @@
 package ru.plenkkovii.weather.service;
 
+import jakarta.servlet.http.Cookie;
 import ru.plenkkovii.weather.model.Session;
 import ru.plenkkovii.weather.model.User;
 
@@ -12,6 +13,11 @@ public interface SessionService {
 
     Optional<Session> getSession(UUID sessionId);
 
+    Optional<Session> getSessionFromCookie(Cookie[] cookies);
+
+
     void deleteSession(UUID sessionId);
+
+
 }
 
