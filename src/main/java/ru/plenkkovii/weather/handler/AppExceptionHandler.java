@@ -21,6 +21,15 @@ public class AppExceptionHandler {
         return "error";
     }
 
+    @ExceptionHandler(OpenWeatherApiException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleOpenWeatherApiException(Exception ex, Model model) {
+        log.error(ex.getMessage(), ex);
+
+        model.addAttribute("error", "Возникла ошибка при работе с внешним сервисом. Попробуйте позже.");
+        return "error";
+    }
+
     @ExceptionHandler({LoginAlreadyExistException.class,
             UserNotFoundException.class,
             SessionExpiredException.class,
