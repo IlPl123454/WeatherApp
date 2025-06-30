@@ -9,3 +9,7 @@ spring:
 
 session:
   duration: 1s
+
+  wiremock:
+    server:
+      baseUrl: localhost

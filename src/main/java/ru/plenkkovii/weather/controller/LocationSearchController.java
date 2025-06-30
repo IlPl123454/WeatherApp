@@ -1,6 +1,5 @@
 package ru.plenkkovii.weather.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -10,23 +9,27 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.plenkkovii.weather.dto.LocationApiResponseDTO;
+import ru.plenkkovii.weather.dto.LocationSearchViewResponseDTO;
+import ru.plenkkovii.weather.model.Session;
 import ru.plenkkovii.weather.service.LocationService;
 import ru.plenkkovii.weather.service.OpenWeatherMapApiService;
+import ru.plenkkovii.weather.service.SessionService;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Controller
 public class LocationSearchController {
 
-    OpenWeatherMapApiService weatherService;
-    LocationService locationService;
+    private final OpenWeatherMapApiService weatherService;
+    private final LocationService locationService;
+    private final SessionService sessionService;
 
     @GetMapping("/city-search")
     public String searchByCityName(@RequestParam String cityname, Model model) throws IOException, InterruptedException {
-        List<LocationApiResponseDTO> weatherByCityName = weatherService.getLocationsByCityName(cityname);
+        List<LocationSearchViewResponseDTO> weatherByCityName = weatherService.getLocationsByCityName(cityname);
 
         model.addAttribute("cityNames", weatherByCityName);
 
@@ -34,18 +37,14 @@ public class LocationSearchController {
     }
 
     @PostMapping("/city-search")
-    public String addLocation(@ModelAttribute LocationApiResponseDTO city, HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String sessionId = null;
+    public String addLocation(@ModelAttribute LocationApiResponseDTO city, HttpServletRequest req) {
+        Optional<Session> session = sessionService.getSessionFromCookie(req.getCookies());
 
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("SESSION_UUID")) {
-                sessionId = cookie.getValue();
-            }
+        if (session.isEmpty()) {
+            return "redirect:/index";
         }
 
-        //TODO разобраться с проверкой на null
-        locationService.addLocation(city, UUID.fromString(sessionId));
+        locationService.addLocationRequest(city, session.get().getId());
 
         return "redirect:/home";
     }

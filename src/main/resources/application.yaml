@@ -8,4 +8,4 @@ spring:
     password: ${DB_PASSWORD}
 
 session:
-  duration: 10m
+  duration: 10h

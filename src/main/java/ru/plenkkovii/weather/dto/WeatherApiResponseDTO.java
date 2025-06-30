@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
+
 @Data
 public class WeatherApiResponseDTO {
 
     @JsonProperty("coord")
     private Coordinates coordinates;
-    //TODO проверить почему тут List, сделать проверку
     @JsonProperty("weather")
     private List<Weather> weather;
     @JsonProperty("base")
@@ -45,7 +45,7 @@ public class WeatherApiResponseDTO {
     }
 
     @Data
-    public static class Weather{
+    public static class Weather {
         private int id;
         private String main;
         private String description;
@@ -53,7 +53,7 @@ public class WeatherApiResponseDTO {
     }
 
     @Data
-    public static class Main{
+    public static class Main {
         private double temp;
         @JsonProperty("feels_like")
         private double feelsLike;
@@ -70,7 +70,7 @@ public class WeatherApiResponseDTO {
     }
 
     @Data
-    public static class Wind{
+    public static class Wind {
         private double speed;
         private double deg;
         private int gust;
@@ -82,7 +82,7 @@ public class WeatherApiResponseDTO {
     }
 
     @Data
-    public static class System{
+    public static class System {
         private int type;
         private int id;
         private String country;

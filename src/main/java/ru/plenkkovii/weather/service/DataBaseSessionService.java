@@ -1,5 +1,6 @@
 package ru.plenkkovii.weather.service;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -55,5 +56,21 @@ public class DataBaseSessionService implements SessionService {
     @Override
     public void deleteSession(UUID sessionId) {
         sessionRepository.deleteById(sessionId);
+    }
+
+    public Optional<Session> getSessionFromCookie(Cookie[] cookies) {
+        String sessionId = null;
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("SESSION_UUID")) {
+                sessionId = cookie.getValue();
+            }
+        }
+
+        if (sessionId == null) {
+            return Optional.empty();
+        }
+
+        return getSession(UUID.fromString(sessionId));
     }
 }

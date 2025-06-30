@@ -1,61 +1,49 @@
 package ru.plenkkovii.weather.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.plenkkovii.weather.config.EnvConfig;
+import ru.plenkkovii.weather.client.OpenWeatherHttpClient;
 import ru.plenkkovii.weather.dto.LocationApiResponseDTO;
+import ru.plenkkovii.weather.dto.LocationSearchViewResponseDTO;
 import ru.plenkkovii.weather.dto.WeatherApiResponseDTO;
+import ru.plenkkovii.weather.mapper.WeatherApiMapper;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
-@AllArgsConstructor
 @Service
 public class OpenWeatherMapApiService {
 
-    private final HttpClient httpClient;
-    private final EnvConfig.WeatherApiConfig weatherApiConfig;
     private final ObjectMapper objectMapper;
+    private final OpenWeatherHttpClient openWeatherHttpClient;
 
+    public OpenWeatherMapApiService(ObjectMapper objectMapper, OpenWeatherHttpClient openWeatherHttpClient) {
+        this.objectMapper = objectMapper;
+        this.openWeatherHttpClient = openWeatherHttpClient;
+    }
 
     public WeatherApiResponseDTO getWeatherByCityCoordinates(double longitude, double latitude)
             throws IOException, InterruptedException {
-        //TODO проверить порядок широты и долготы
-        String requestUri = String.format("%s?lat=%s&lon=%s&appid=%s&units=metric",
-                weatherApiConfig.getBaseWeatherUrl(),
-                longitude,
-                latitude,
-                weatherApiConfig.getApiKey());
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(requestUri))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = openWeatherHttpClient.getCurrentWeatherByCoordinates(longitude, latitude);
 
         return objectMapper.readValue(response.body(), WeatherApiResponseDTO.class);
     }
 
-    public List<LocationApiResponseDTO> getLocationsByCityName(String cityName)
+    public List<LocationSearchViewResponseDTO> getLocationsByCityName(String cityName)
             throws IOException, InterruptedException {
-        String requestUri = String.format("%s?q=%s&limit=%s&appid=%s", weatherApiConfig.getBaseGeocodingUrl(),
-                cityName, weatherApiConfig.getLimit(), weatherApiConfig.getApiKey());
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(requestUri))
-                .GET()
-                .build();
+        HttpResponse<String> response = openWeatherHttpClient.getLocationsByName(cityName);
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        List<LocationApiResponseDTO> locationApiResponseDTOS = objectMapper
+                .readValue(response.body(), new TypeReference<>() {
+                });
 
-        LocationApiResponseDTO[] locationDTOS = objectMapper.readValue(response.body(), LocationApiResponseDTO[].class);
 
-        return List.of(locationDTOS);
+        return locationApiResponseDTOS.stream()
+                .map(WeatherApiMapper::toLocationSearchViewResponseDTO)
+                .toList();
     }
 }
