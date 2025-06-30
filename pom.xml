@@ -47,8 +47,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
-            <!--            <optional>true</optional>-->
-            <!--            <scope>provided</scope>-->
+            <scope>provided</scope>
 
         </dependency>
         <dependency>
@@ -80,6 +79,13 @@
             <artifactId>spring-dotenv</artifactId>
             <version>4.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-jetty12</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+
+
 
     </dependencies>
 
