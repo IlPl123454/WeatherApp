@@ -1,5 +1,6 @@
 package ru.plenkkovii.weather.service;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,11 @@ public class InMemorySessionService implements SessionService {
         }
 
         sessions.remove(uuid);
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Session> getSessionFromCookie(Cookie[] cookies) {
         return Optional.empty();
     }
 

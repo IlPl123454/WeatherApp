@@ -14,19 +14,25 @@ import java.net.http.HttpResponse;
 @Component
 public class OpenWeatherHttpClient {
     private final HttpClient httpClient;
+    private final String openweatherBaseUrl;
+    private final String geocodingBaseUrl;
+    private final String openweatherApiKey;
+    private final int geocodingLimitNumber;
 
-    public OpenWeatherHttpClient(HttpClient httpClient) {
+    public OpenWeatherHttpClient(HttpClient httpClient,
+                                 @Value("${OPENWEATHER_BASE_URL}") String openweatherBaseUrl,
+                                 @Value("${GEOCODING_BASE_URL}") String geocodingBaseUrl,
+                                 @Value("${OPENWEATHER_API_KEY}") String openweatherApiKey,
+                                 @Value("${GEOCODING_LIMIT_NUMBER}") int geocodingLimitNumber) {
         this.httpClient = httpClient;
+        this.openweatherBaseUrl = openweatherBaseUrl;
+        this.geocodingBaseUrl = geocodingBaseUrl;
+        this.openweatherApiKey = openweatherApiKey;
+        this.geocodingLimitNumber = geocodingLimitNumber;
     }
 
-    @Value("${OPENWEATHER_BASE_URL}")
-    private String openweatherBaseUrl;
-    @Value("${GEOCODING_BASE_URL}")
-    private String geocodingBaseUrl;
-    @Value("${OPENWEATHER_API_KEY}")
-    private String openweatherApiKey;
-    @Value("${GEOCODING_LIMIT_NUMBER}")
-    private int geocodingLimitNumber;
+
+
 
     public HttpResponse<String> getCurrentWeatherByCoordinates(double longitude, double latitude) throws IOException, InterruptedException {
         String requestUri = UriComponentsBuilder.fromUriString(openweatherBaseUrl)
