@@ -2,11 +2,8 @@ package ru.plenkkovii.weather.mapper;
 
 import ru.plenkkovii.weather.dto.LocationApiResponseDTO;
 import ru.plenkkovii.weather.dto.LocationSearchViewResponseDTO;
-import ru.plenkkovii.weather.dto.WeatherApiResponseDTO;
 import ru.plenkkovii.weather.dto.LocationViewResponseDTO;
-
-import java.util.ArrayList;
-import java.util.List;
+import ru.plenkkovii.weather.dto.WeatherApiResponseDTO;
 
 public class WeatherApiMapper {
     public static LocationViewResponseDTO toLocationViewResponseDTO(WeatherApiResponseDTO dto, String name, double latitude, double longitude) {
