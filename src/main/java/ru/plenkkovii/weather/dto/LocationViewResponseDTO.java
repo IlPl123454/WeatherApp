@@ -8,6 +8,8 @@ import lombok.Data;
 public class LocationViewResponseDTO {
     private String name;
     private String country;
+    private double latitude;
+    private double longitude;
     private int temp;
     private int feelsLike;
     private String weather;

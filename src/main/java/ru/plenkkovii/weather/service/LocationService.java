@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.plenkkovii.weather.dto.LocationApiResponseDTO;
 import ru.plenkkovii.weather.exception.LocationAlreadyExistException;
-import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
 import ru.plenkkovii.weather.exception.SessionExpiredException;
 import ru.plenkkovii.weather.exception.UserNotFoundException;
 import ru.plenkkovii.weather.model.Location;
@@ -53,7 +52,7 @@ public class LocationService {
         return location;
     }
     @Transactional
-    public void deleteLocationByName(String name) {
-        locationRepository.deleteByName(name);
+    public void deleteLocation(String name, double latitude, double longitude) {
+        locationRepository.deleteByNameAndLatitudeAndLongitude(name, longitude, latitude);
     }
 }

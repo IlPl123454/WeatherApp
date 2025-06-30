@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Integer> {
     List<Location> findByUserId(int userId);
-    void deleteByName(String name);
+
+    void deleteByNameAndLatitudeAndLongitude(String name, double latitude, double longitude);
 }

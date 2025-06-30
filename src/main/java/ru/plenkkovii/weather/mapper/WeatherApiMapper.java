@@ -9,12 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherApiMapper {
-    public static LocationViewResponseDTO toLocationViewResponseDTO(WeatherApiResponseDTO dto, String name) {
+    public static LocationViewResponseDTO toLocationViewResponseDTO(WeatherApiResponseDTO dto, String name, double latitude, double longitude) {
         WeatherApiResponseDTO.Weather weather = dto.getWeather().getFirst();
 
         return LocationViewResponseDTO.builder()
                 .name(name)
                 .country(dto.getSystem().getCountry())
+                .latitude(latitude)
+                .longitude(longitude)
                 .temp((int) dto.getMain().getTemp())
                 .feelsLike((int) dto.getMain().getFeelsLike())
                 .weather(weather.getDescription())

@@ -2,8 +2,8 @@ package ru.plenkkovii.weather.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.plenkkovii.weather.dto.WeatherApiResponseDTO;
 import ru.plenkkovii.weather.dto.LocationViewResponseDTO;
+import ru.plenkkovii.weather.dto.WeatherApiResponseDTO;
 import ru.plenkkovii.weather.mapper.WeatherApiMapper;
 import ru.plenkkovii.weather.model.Location;
 import ru.plenkkovii.weather.repository.LocationRepository;
@@ -31,7 +31,11 @@ public class WeatherService {
             WeatherApiResponseDTO weatherApiResponseDTO = openWeatherMapApiService
                     .getWeatherByCityCoordinates(location.getLatitude(), location.getLongitude());
 
-            LocationViewResponseDTO weatherResponseDTO = WeatherApiMapper.toLocationViewResponseDTO(weatherApiResponseDTO, location.getName());
+            LocationViewResponseDTO weatherResponseDTO = WeatherApiMapper.toLocationViewResponseDTO(
+                    weatherApiResponseDTO,
+                    location.getName(),
+                    location.getLatitude(),
+                    location.getLongitude());
 
             weatherResponseDTOs.add(weatherResponseDTO);
         }

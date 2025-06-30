@@ -43,8 +43,8 @@ public class HomeController {
     }
 
     @DeleteMapping("/delete-location")
-    public String deleteLocation(@RequestParam String name) {
-        locationService.deleteLocationByName(name);
+    public String deleteLocation(@RequestParam String name, @RequestParam double latitude, @RequestParam double longitude) {
+        locationService.deleteLocation(name, longitude, latitude);
 
         return "redirect:/home";
     }
