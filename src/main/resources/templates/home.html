@@ -12,7 +12,9 @@
 
     <form class="d-flex" role="search" action="/city-search" method="get" style="margin-bottom: 10px;">
         <input name="cityname" class="form-control me-2" type="search" placeholder="Поиск города по названию"
-               aria-label="Search"/>
+               aria-label="Search" required
+               pattern=".*\S.*"
+               title="Поле не должно быть пустым или содержать только пробелы" />
         <button class="btn btn-outline-success" type="submit">Поиск</button>
     </form>
 

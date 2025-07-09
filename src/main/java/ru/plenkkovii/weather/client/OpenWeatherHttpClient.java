@@ -31,9 +31,6 @@ public class OpenWeatherHttpClient {
         this.geocodingLimitNumber = geocodingLimitNumber;
     }
 
-
-
-
     public HttpResponse<String> getCurrentWeatherByCoordinates(double longitude, double latitude) throws IOException, InterruptedException {
         String requestUri = UriComponentsBuilder.fromUriString(openweatherBaseUrl)
                 .queryParam("lat", longitude)
@@ -77,5 +74,4 @@ public class OpenWeatherHttpClient {
 
         return response;
     }
-
 }

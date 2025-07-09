@@ -110,7 +110,10 @@ public class OpenWeatherApiServiceTest {
         WeatherApiResponseDTO weatherApiResponseDTO = openWeatherMapApiService.getWeatherByCityCoordinates(longitude, latitude);
 
         LocationViewResponseDTO location = WeatherApiMapper.toLocationViewResponseDTO(
-                weatherApiResponseDTO, weatherApiResponseDTO.getName());
+                weatherApiResponseDTO,
+                weatherApiResponseDTO.getName(),
+                weatherApiResponseDTO.getCoordinates().getLatitude(),
+                weatherApiResponseDTO.getCoordinates().getLongitude());
 
         LocationViewResponseDTO weatherToAssert = LocationViewResponseDTO.builder()
                 .name("Almaty")

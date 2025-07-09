@@ -27,6 +27,11 @@ public class HomeController {
     private final LocationService locationService;
 
 
+    @GetMapping("/")
+    public String start() {
+        return "redirect:/home";
+    }
+
     @GetMapping("/home")
     public String home(HttpServletRequest req, Model model) throws IOException, InterruptedException {
         Optional<Session> session = sessionService.getSessionFromCookie(req.getCookies());
