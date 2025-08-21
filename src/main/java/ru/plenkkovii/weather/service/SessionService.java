@@ -17,7 +17,5 @@ public interface SessionService {
 
 
     void deleteSession(UUID sessionId);
-
-
 }
 

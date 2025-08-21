@@ -31,7 +31,7 @@ public class OpenWeatherHttpClient {
         this.geocodingLimitNumber = geocodingLimitNumber;
     }
 
-    public HttpResponse<String> getCurrentWeatherByCoordinates(double longitude, double latitude) throws IOException, InterruptedException {
+    public String getCurrentWeatherByCoordinates(double longitude, double latitude) throws IOException, InterruptedException {
         String requestUri = UriComponentsBuilder.fromUriString(openweatherBaseUrl)
                 .queryParam("lat", longitude)
                 .queryParam("lon", latitude)
@@ -51,10 +51,10 @@ public class OpenWeatherHttpClient {
             throw new OpenWeatherApiException(response.body());
         }
 
-        return response;
+        return response.body();
     }
 
-    public HttpResponse<String> getLocationsByName(String name) throws IOException, InterruptedException {
+    public String getLocationsByName(String name) throws IOException, InterruptedException {
         String requestUri = UriComponentsBuilder.fromUriString(geocodingBaseUrl)
                 .queryParam("q", name)
                 .queryParam("limit", geocodingLimitNumber)
@@ -72,6 +72,6 @@ public class OpenWeatherHttpClient {
             throw new OpenWeatherApiException(response.body());
         }
 
-        return response;
+        return response.body();
     }
 }

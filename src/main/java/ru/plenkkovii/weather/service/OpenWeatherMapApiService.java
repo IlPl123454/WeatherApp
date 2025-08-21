@@ -10,7 +10,6 @@ import ru.plenkkovii.weather.dto.WeatherApiResponseDTO;
 import ru.plenkkovii.weather.mapper.WeatherApiMapper;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.List;
 
 @Service
@@ -27,18 +26,18 @@ public class OpenWeatherMapApiService {
     public WeatherApiResponseDTO getWeatherByCityCoordinates(double longitude, double latitude)
             throws IOException, InterruptedException {
 
-        HttpResponse<String> response = openWeatherHttpClient.getCurrentWeatherByCoordinates(longitude, latitude);
+        String response = openWeatherHttpClient.getCurrentWeatherByCoordinates(longitude, latitude);
 
-        return objectMapper.readValue(response.body(), WeatherApiResponseDTO.class);
+        return objectMapper.readValue(response, WeatherApiResponseDTO.class);
     }
 
     public List<LocationSearchViewResponseDTO> getLocationsByCityName(String cityName)
             throws IOException, InterruptedException {
 
-        HttpResponse<String> response = openWeatherHttpClient.getLocationsByName(cityName);
+        String response = openWeatherHttpClient.getLocationsByName(cityName);
 
         List<LocationApiResponseDTO> locationApiResponseDTOS = objectMapper
-                .readValue(response.body(), new TypeReference<>() {
+                .readValue(response, new TypeReference<>() {
                 });
 
 

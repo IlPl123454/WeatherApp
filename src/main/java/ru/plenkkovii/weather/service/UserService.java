@@ -6,7 +6,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.plenkkovii.weather.exception.LocationAlreadyExistException;
 import ru.plenkkovii.weather.exception.LoginAlreadyExistException;
 import ru.plenkkovii.weather.exception.WrongPasswordException;
 import ru.plenkkovii.weather.model.User;
@@ -43,6 +42,7 @@ public class UserService {
                 throw new LoginAlreadyExistException("Пользователь с таким логином уже существет");
             }
             throw e;
+
         }
 
         return sessionService.createSession(user);
