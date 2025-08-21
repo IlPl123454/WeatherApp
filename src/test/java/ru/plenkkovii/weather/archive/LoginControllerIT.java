@@ -1,4 +1,4 @@
-package ru.plenkkovii.weather.controller;
+package ru.plenkkovii.weather.archive;
 
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
@@ -32,7 +32,6 @@ public class LoginControllerIT {
 
     @Autowired
     private UserService userService;
-
 
     @Test
     public void shouldLoginUser() throws Exception {

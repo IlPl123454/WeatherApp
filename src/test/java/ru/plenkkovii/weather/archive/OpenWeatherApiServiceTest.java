@@ -1,4 +1,4 @@
-package ru.plenkkovii.weather.service;
+package ru.plenkkovii.weather.archive;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -12,6 +12,7 @@ import ru.plenkkovii.weather.dto.LocationSearchViewResponseDTO;
 import ru.plenkkovii.weather.dto.LocationViewResponseDTO;
 import ru.plenkkovii.weather.dto.WeatherApiResponseDTO;
 import ru.plenkkovii.weather.mapper.WeatherApiMapper;
+import ru.plenkkovii.weather.service.OpenWeatherMapApiService;
 
 import java.io.IOException;
 import java.net.http.HttpClient;

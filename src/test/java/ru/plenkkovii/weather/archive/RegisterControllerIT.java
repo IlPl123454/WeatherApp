@@ -1,4 +1,4 @@
-package ru.plenkkovii.weather.controller;
+package ru.plenkkovii.weather.archive;
 
 
 import jakarta.servlet.http.Cookie;
@@ -54,10 +54,8 @@ public class RegisterControllerIT {
 
     @Test
     void shouldNotRegisterUserIfLoginExist() throws Exception {
-        // создаем user1
         userService.registerAndLogin("test", "123");
 
-        // пытаемся создать его еще раз, ждем ошибку
         mvc.perform(post("/register")
                         .param("login", "test")
                         .param("password", "123"))
